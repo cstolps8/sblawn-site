@@ -4,6 +4,8 @@ import { contact, media } from "@/lib/mock-data";
 import { CartButton } from "./cart";
 import { MobileNav } from "./mobile-nav";
 
+const searchPath = `${process.env.NEXT_PUBLIC_BASE_PATH ?? ""}/search/`;
+
 export const nav = [
   { href: "/product-overview/", label: "Product Overview" },
   { href: "/product-category/striping-systems/", label: "Shop" },
@@ -42,7 +44,7 @@ export function SiteHeader() {
           </ul>
         </nav>
         <div className="ml-auto flex items-center gap-2">
-          <form action="/search/" className="hidden md:block" role="search">
+          <form action={searchPath} className="hidden md:block" role="search">
             <label htmlFor="q" className="sr-only">
               Search products and mower models
             </label>

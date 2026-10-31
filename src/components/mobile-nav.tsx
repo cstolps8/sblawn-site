@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { useState } from "react";
 
+const searchPath = `${process.env.NEXT_PUBLIC_BASE_PATH ?? ""}/search/`;
+
 export function MobileNav({ items }: { items: { href: string; label: string }[] }) {
   const [open, setOpen] = useState(false);
   return (
@@ -21,7 +23,7 @@ export function MobileNav({ items }: { items: { href: string; label: string }[] 
       </button>
       {open && (
         <div id="mobile-menu" className="absolute inset-x-0 top-full border-b border-black/10 bg-white shadow-lg">
-          <form action="/search/" className="px-4 pt-4" role="search">
+          <form action={searchPath} className="px-4 pt-4" role="search">
             <input
               name="q"
               aria-label="Search"
