@@ -1,26 +1,58 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+/* S&B Lawn Systems brand tokens (taken from the current sblawnsystems.com) */
+@theme {
+  --color-charcoal: #322e2f;
+  --color-charcoal-900: #231f20;
+  --color-turf: #5db35c;
+  --color-turf-600: #4a9a49;
+  --color-turf-800: #2a6334;
+  --color-turf-50: #eef7ee;
+  --color-sand: #f5eded;
+  --color-mist: #f6f6f4;
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --font-sans: var(--font-work-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-barlow), "Arial Narrow", sans-serif;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: #ffffff;
+  color: var(--color-charcoal);
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-family: var(--font-display);
+  letter-spacing: 0.01em;
+}
+
+/* Signature mowed-stripe pattern */
+.stripes {
+  background-image: repeating-linear-gradient(
+    90deg,
+    var(--color-turf) 0 64px,
+    var(--color-turf-600) 64px 128px
+  );
+}
+.stripes-dark {
+  background-image: repeating-linear-gradient(
+    90deg,
+    var(--color-turf-800) 0 64px,
+    #24572d 64px 128px
+  );
+}
+.stripe-rule {
+  height: 6px;
+  background-image: repeating-linear-gradient(
+    90deg,
+    var(--color-turf) 0 24px,
+    var(--color-turf-800) 24px 48px
+  );
+}
+
+.prose-sb p {
+  margin-bottom: 1rem;
+  line-height: 1.7;
 }

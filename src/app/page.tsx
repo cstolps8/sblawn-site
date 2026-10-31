@@ -1,69 +1,169 @@
 import Image from "next/image";
+import Link from "next/link";
+import { MowerPicker } from "@/components/mower-picker";
+import { ProductCard } from "@/components/product-card";
+import { ButtonLink, Container, Eyebrow } from "@/components/ui";
+import { getCategories, getFeaturedProducts, getMowerModels, getProducts } from "@/lib/catalog";
+import { media } from "@/lib/mock-data";
 
-export default function Home() {
+const steps = [
+  { n: "01", title: "Attach", body: "Clamp it to your walk-behind in about 15 minutes. Brackets for 40+ brands are in the box.", img: media.step1 },
+  { n: "02", title: "Design", body: "Pick a pattern — straight stripes, checkerboard, diamonds. The patterning guide shows you how.", img: media.step2 },
+  { n: "03", title: "Mow", body: "Mow like normal. The sand-filled roller bends the grass for crisp, pro-level stripes.", img: media.step3 },
+];
+
+export default async function Home() {
+  const [featured, categories, mowers, systems] = await Promise.all([
+    getFeaturedProducts(),
+    getCategories(),
+    getMowerModels(),
+    getProducts("striping-systems"),
+  ]);
+  const fromPrice = Math.min(...systems.map((s) => s.priceCents)) / 100;
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
+    <>
+      {/* Hero */}
+      <section className="relative isolate overflow-hidden bg-charcoal text-white">
         <Image
-          className="dark:invert h-5 w-[100px]"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
+          src={media.hero}
+          alt="Aerial view of a freshly striped lawn"
+          fill
           priority
+          sizes="100vw"
+          className="-z-10 object-cover opacity-60"
         />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the{" "}
-            <code className="rounded bg-black/[.06] px-1.5 py-0.5 font-mono text-[0.9em] dark:bg-white/[.08]">
-              page.tsx
-            </code>{" "}
-            file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+        <div className="absolute inset-0 -z-10 bg-gradient-to-r from-charcoal via-charcoal/70 to-transparent" />
+        <Container className="py-20 sm:py-28 lg:py-36">
+          <div className="max-w-2xl">
+            <Eyebrow>Pattern your lawn like the pros</Eyebrow>
+            <h1 className="mt-3 font-display text-5xl font-extrabold uppercase leading-[0.95] sm:text-7xl">
+              Crisp, professional stripes. Every mow.
+            </h1>
+            <p className="mt-5 max-w-xl text-lg text-white/85">
+              Lawn Stryper® attaches to most walk-behind mowers in 15 minutes so you can mow and stripe in one pass.
+              Systems from ${fromPrice.toFixed(2)}.
+            </p>
+            <div className="mt-8 flex flex-wrap gap-3">
+              <ButtonLink href="/product-category/striping-systems/">Shop striping systems</ButtonLink>
+              <ButtonLink href="/product-overview/" variant="outline">
+                Compare systems
+              </ButtonLink>
+            </div>
+          </div>
+        </Container>
+      </section>
+
+      {/* Fit finder */}
+      <section className="stripes">
+        <Container className="py-8">
+          <div className="rounded-2xl bg-white p-6 shadow-xl sm:p-8">
+            <div className="mb-5 flex flex-wrap items-end justify-between gap-2">
+              <div>
+                <h2 className="font-display text-3xl font-bold uppercase">Will it fit my mower?</h2>
+                <p className="text-charcoal/70">Pick your mower to see the systems and parts that fit.</p>
+              </div>
+              <Link href="/mower-fit/" className="text-sm font-semibold text-turf-800 underline">
+                Browse all mowers
+              </Link>
+            </div>
+            <MowerPicker mowers={mowers} />
+          </div>
+        </Container>
+      </section>
+
+      {/* Featured systems */}
+      <section className="py-16 sm:py-20">
+        <Container>
+          <div className="flex flex-wrap items-end justify-between gap-4">
+            <div>
+              <Eyebrow>Shop the newest generation</Eyebrow>
+              <h2 className="mt-2 font-display text-4xl font-bold uppercase sm:text-5xl">The complete system</h2>
+            </div>
+            <Link href="/product-category/striping-systems/" className="font-semibold text-turf-800 underline">
+              View all systems
+            </Link>
+          </div>
+          <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            {featured.map((p, i) => (
+              <ProductCard key={p.slug} product={p} priority={i === 0} />
+            ))}
+          </div>
+        </Container>
+      </section>
+
+      {/* How it works */}
+      <section className="bg-mist py-16 sm:py-20">
+        <Container>
+          <Eyebrow>How it works</Eyebrow>
+          <h2 className="mt-2 font-display text-4xl font-bold uppercase sm:text-5xl">Attach. Design. Mow.</h2>
+          <div className="mt-10 grid gap-8 md:grid-cols-3">
+            {steps.map((s) => (
+              <div key={s.n} className="overflow-hidden rounded-xl bg-white shadow-sm">
+                <div className="relative aspect-[16/10]">
+                  <Image src={s.img} alt="" fill sizes="(min-width: 768px) 33vw, 100vw" className="object-cover" />
+                </div>
+                <div className="p-6">
+                  <p className="font-display text-5xl font-extrabold text-turf">{s.n}</p>
+                  <h3 className="mt-1 font-display text-2xl font-bold uppercase">{s.title}</h3>
+                  <p className="mt-2 text-charcoal/75">{s.body}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </Container>
+      </section>
+
+      {/* Categories */}
+      <section className="py-16 sm:py-20">
+        <Container>
+          <h2 className="font-display text-4xl font-bold uppercase sm:text-5xl">Shop by category</h2>
+          <div className="mt-8 grid gap-5 md:grid-cols-3">
+            {categories.map((c) => (
+              <Link
+                key={c.slug}
+                href={`/product-category/${c.slug}/`}
+                className="group relative flex aspect-[4/3] items-end overflow-hidden rounded-xl bg-charcoal text-white"
+              >
+                <Image
+                  src={c.image}
+                  alt=""
+                  fill
+                  sizes="(min-width: 768px) 33vw, 100vw"
+                  className="object-cover opacity-70 transition duration-500 group-hover:scale-105"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-charcoal/90 to-transparent" />
+                <div className="relative p-6">
+                  <p className="text-sm font-semibold text-turf">{c.tagline}</p>
+                  <h3 className="font-display text-3xl font-bold uppercase">{c.name}</h3>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </Container>
+      </section>
+
+      {/* Before/after CTA */}
+      <section className="bg-charcoal text-white">
+        <div className="grid lg:grid-cols-2">
+          <div className="relative min-h-72">
+            <Image src={media.beforeAfter} alt="A lawn before and after striping with Lawn Stryper" fill sizes="(min-width: 1024px) 50vw, 100vw" className="object-cover" />
+          </div>
+          <div className="px-6 py-14 sm:px-12 lg:py-20">
+            <Eyebrow>Why wait?</Eyebrow>
+            <h2 className="mt-2 font-display text-4xl font-bold uppercase sm:text-5xl">Make this season your best yet</h2>
+            <ul className="mt-6 space-y-3 text-white/85">
+              <li>✓ Works with gas and battery mowers</li>
+              <li>✓ Keep your bagger on — or take it off</li>
+              <li>✓ Assembled in Milwaukee, WI</li>
+              <li>✓ Ships UPS Ground in 1–2 business days</li>
+            </ul>
+            <div className="mt-8">
+              <ButtonLink href="/product/lawn-stryper-generation-3/">Shop Generation 3</ButtonLink>
+            </div>
+          </div>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert h-[14px] w-4"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
+      </section>
+    </>
   );
 }

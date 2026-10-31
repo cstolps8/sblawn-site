@@ -1,36 +1,40 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# sblawnsystems.com — storefront frontend
 
-## Getting Started
+Next.js 16 (App Router, Cache Components) + Tailwind 4. Replaces the WordPress/WooCommerce site.
+See the project plan (`claude/sblawnsystems-site-plan.md` in the SB-lawn project) for the full roadmap.
 
-First, run the development server:
+## Run it
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
+npm run dev        # http://localhost:3000
+npm run build && npm start
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## What's here (Phase 1 frontend, mock data)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+| Route | Notes |
+|---|---|
+| `/` | Hero, mower fit finder, featured systems, how it works, categories |
+| `/product-category/[slug]/` | Same URLs as WooCommerce (`striping-systems`, `lawn-stryper-replacement-parts`, `apparel`) |
+| `/product/[slug]/` | Same slugs as WooCommerce. Gallery, options, add to cart, specs, fits, matching parts, Product JSON-LD |
+| `/product-overview/` | System comparison table |
+| `/mower-fit/` and `/mower-fit/[model]/` | Brand → model picker; SEO page per mower model |
+| `/search/?q=` | Products + mower models; typo-tolerant (trigram) — stand-in for Postgres FTS + `pg_trgm` |
+| `/cart/` | Client cart (localStorage). Checkout button disabled until Stripe (Phase 4) |
+| `/support/`, `/warranty/`, `/contact/` | FAQ (FAQPage JSON-LD), placeholders for manuals and form sending |
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+`trailingSlash: true` keeps URLs identical to WordPress so most existing links need no redirect.
 
-## Learn More
+## Code layout
 
-To learn more about Next.js, take a look at the following resources:
+- `src/lib/catalog.ts` — **the only data API pages use.** Swap its bodies for Postgres queries (with `"use cache"` + cache tags) in Phase 3.
+- `src/lib/mock-data.ts` — products/prices/copy from the live site (Oct 2026). **Mower models and fitment are sample data** derived from the published compatibility rules — replace with S&B's real list.
+- `src/lib/types.ts` — types shaped like the planned tables (`products`, `mower_models`, `fitment`).
+- `src/components/` — header, footer, cards, cart, gallery, mower picker.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Brand
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Charcoal `#322E2F`, turf green `#5DB35C`, dark green `#2A6334`; Barlow Condensed (headings) + Work Sans (body), self-hosted via `@fontsource`. Tokens live in `src/app/globals.css`.
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Images currently load from `www.sblawnsystems.com/wp-content/uploads` (allowed in `next.config.ts`); point that at the Azure CDN after media moves to Blob Storage.
